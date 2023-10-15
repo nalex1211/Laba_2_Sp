@@ -75,8 +75,8 @@ bool load_automaton(const char *filename, Automaton *automaton) {
     return true;
 }
 
-void unprocessed_symbols(Automaton *automaton) {
-    printf("Symbols that are not processed by the automaton: ");
+bool unprocessed_symbols(Automaton *automaton) {
+    bool allProcessed = true;
     for (int i = 0; i < automaton->num_symbols; i++) {
         bool processed = false;
         for (int j = 0; j < automaton->num_states; j++) {
@@ -86,12 +86,20 @@ void unprocessed_symbols(Automaton *automaton) {
             }
         }
         if (!processed) {
+            if (allProcessed) {
+                printf("Symbols that are not processed by the automaton: ");
+                allProcessed = false;
+            }
             printf("%c ", automaton->symbols[i]);
         }
     }
-    printf("\n");
+    if (allProcessed) {
+        printf("All symbols are processed.\n");
+    } else {
+        printf("\n");
+    }
+    return allProcessed;
 }
-
 int main() {
     Automaton automaton;
     if (!load_automaton("automaton.txt", &automaton)) {
