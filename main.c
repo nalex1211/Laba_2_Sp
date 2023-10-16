@@ -26,9 +26,25 @@ int get_symbol_index(Automaton *automaton, char symbol) {
 bool load_automaton(const char *filename, Automaton *automaton) {
     FILE *file = fopen(filename, "r");
     if (!file) {
+        char choice;
         printf("Error opening file %s\n", filename);
-        return false;
+        do {
+            printf("Do you want to try again (y/n)? ");
+            scanf(" %c", &choice);
+
+            if (choice == 'y' || choice == 'Y') {
+                file = fopen(filename, "r");
+                if (file) {
+                    break; // Exit the loop if the file is successfully opened on the retry
+                } else {
+                    printf("Error reopening file %s\n", filename);
+                }
+            } else if (choice == 'n' || choice == 'N') {
+                return false;
+            }
+        } while (choice != 'y' && choice != 'Y' && choice != 'n' && choice != 'N' || !file);
     }
+
 
     if (fscanf(file, "%d", &automaton->num_symbols) != 1) {
         printf("Error reading num_symbols\n");
