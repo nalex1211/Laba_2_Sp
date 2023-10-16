@@ -35,7 +35,7 @@ bool load_automaton(const char *filename, Automaton *automaton) {
             if (choice == 'y' || choice == 'Y') {
                 file = fopen(filename, "r");
                 if (file) {
-                    break; // Exit the loop if the file is successfully opened on the retry
+                    break;
                 } else {
                     printf("Error reopening file %s\n", filename);
                 }
