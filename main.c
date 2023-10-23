@@ -91,17 +91,31 @@ bool load_automaton(const char *filename, Automaton *automaton) {
     return true;
 }
 
+void dfs(Automaton *automaton, int state, bool *visited, bool *processed_symbols) {
+    if (visited[state]) {
+        return;
+    }
+
+    visited[state] = true;
+
+    for (int i = 0; i < automaton->num_symbols; i++) {
+        int next_state = automaton->transitions[state][i];
+        if (next_state != -1) {
+            processed_symbols[i] = true;
+            dfs(automaton, next_state, visited, processed_symbols);
+        }
+    }
+}
+
 bool unprocessed_symbols(Automaton *automaton) {
+    bool visited[MAX_STATES] = {false};
+    bool processed_symbols[MAX_SYMBOLS] = {false};
+
+    dfs(automaton, automaton->start_state, visited, processed_symbols);
+
     bool allProcessed = true;
     for (int i = 0; i < automaton->num_symbols; i++) {
-        bool processed = false;
-        for (int j = 0; j < automaton->num_states; j++) {
-            if (automaton->transitions[j][i] != -1) {
-                processed = true;
-                break;
-            }
-        }
-        if (!processed) {
+        if (!processed_symbols[i]) {
             if (allProcessed) {
                 printf("Symbols that are not processed by the automaton: ");
                 allProcessed = false;
@@ -109,13 +123,17 @@ bool unprocessed_symbols(Automaton *automaton) {
             printf("%c ", automaton->symbols[i]);
         }
     }
+
     if (allProcessed) {
         printf("All symbols are processed.\n");
     } else {
         printf("\n");
     }
+
     return allProcessed;
 }
+
+
 int main() {
     Automaton automaton;
     if (!load_automaton("automaton.txt", &automaton)) {
